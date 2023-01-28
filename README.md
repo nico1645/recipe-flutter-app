@@ -4,4 +4,4 @@ This is one of my weekend projects. The app is for digitalizing recipes with pic
 
 ## Getting Started
 
-Todo.
+Todos.
