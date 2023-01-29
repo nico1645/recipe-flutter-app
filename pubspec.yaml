@@ -41,6 +41,7 @@ dependencies:
   path: 1.8.2
   document_scanner_flutter: ^0.2.7
   easy_image_viewer: ^1.2.0
+  file_picker: ^5.2.5
 
 dev_dependencies:
   flutter_test:

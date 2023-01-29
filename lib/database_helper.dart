@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
+import 'dart:convert' as convert;
 
 class DatabaseHelper {
   // Private constructor
@@ -91,5 +92,28 @@ class DatabaseHelper {
       where: '$columnId = ?',
       whereArgs: [id],
     );
+  }
+
+  Future<String> generateBackup() async {
+    List backups = await _db.query(table);
+
+    String json = convert.jsonEncode(backups);
+
+    return json;
+  }
+
+  Future<void> restoreBackup(String backup) async {
+    Batch batch = _db.batch();
+
+    List json = convert.jsonDecode(backup);
+
+    for (var i = 0; i < json.length; i++) {
+      batch.insert(table, json[i]);
+    }
+    await batch.commit(continueOnError: false, noResult: true);
+  }
+
+  Future<void> clearAllTables() async {
+    await _db.delete(table);
   }
 }

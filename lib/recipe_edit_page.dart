@@ -53,6 +53,7 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
   void initState() {
     super.initState();
     // Retrieve the recipes when the app starts
+    categoryValue = widget.data[DatabaseHelper.columnCategory];
     titleController.text = widget.data[DatabaseHelper.columnTitle];
     descriptionController.text = widget.data[DatabaseHelper.columnDescription];
     searchKeywordsController.text =
@@ -210,6 +211,7 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
                                   top: 10,
                                   child: ElevatedButton(
                                     onPressed: () {
+                                      image.delete();
                                       imagesList.remove(image);
                                       setState(() {
                                         imagesList;
@@ -313,6 +315,11 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
               child: const Text("Löschen"),
               onPressed: () {
                 Navigator.of(context).pop();
+                if (imagesList.isNotEmpty) {
+                  for (final imagePath in imagesList) {
+                    imagePath.delete();
+                  }
+                }
                 _delete();
                 widget.reload();
                 Navigator.of(context).pop();

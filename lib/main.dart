@@ -2,6 +2,7 @@ import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:recipe/database_helper.dart';
 import 'package:recipe/recipe_add_page.dart';
+import 'package:recipe/recipe_backup_page.dart';
 import 'package:recipe/recipe_edit_page.dart';
 import 'dart:io';
 
@@ -37,6 +38,7 @@ class RecipeMainPage extends StatefulWidget {
 class _RecipeMainPageState extends State<RecipeMainPage> {
   var _categoryOn = false;
   String _selectedCategory = "Mamis Rezepte";
+  var _selectedCategoryIndex = 0;
   final _categoryItems = [
     'Mamis Rezepte',
     'Fleisch',
@@ -71,6 +73,20 @@ class _RecipeMainPageState extends State<RecipeMainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) => RecipeBackupPage(
+                    reload: _query,
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.import_export),
+          )
+        ],
         title: Container(
           height: 40,
           width: double.infinity,
@@ -101,29 +117,40 @@ class _RecipeMainPageState extends State<RecipeMainPage> {
         children: <Widget>[
           if (_categoryOn)
             Container(
-                padding: const EdgeInsets.all(2.0),
-                height: 70,
-                width: double.infinity,
-                child: Column(
-                  children: <Widget>[
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        fixedSize: const Size(130, 0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(32.0),
+              padding: const EdgeInsets.all(2.0),
+              width: double.infinity,
+              height: 50,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: 7,
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _selectedCategoryIndex == index
+                              ? Colors.blue
+                              : Colors.grey,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0),
+                          ),
                         ),
+                        onPressed: () {
+                          setState(() {
+                            _selectedCategoryIndex = index;
+                          });
+                          _selectedCategory = _categoryItems[index];
+                          _runFilter(searchController.text);
+                        },
+                        child: Text(_categoryItems[index]),
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _selectedCategory = _categoryItems[0];
-                        });
-                      },
-                      child: Text(_categoryItems[0]),
-                    )
-                  ],
-                )),
+                    ),
+                  );
+                },
+              ),
+            ),
           Expanded(
             child: ListView.builder(
               itemCount: filteredRecipes.length,
@@ -215,10 +242,6 @@ class _RecipeMainPageState extends State<RecipeMainPage> {
     setState(() {
       filteredRecipes = _recipes;
     });
-    /* debugPrint('query all rows:');
-    for (final row in allRows) {
-      debugPrint(row.toString());
-    } */
   }
 
   void _runFilter(String enteredKeyword) {

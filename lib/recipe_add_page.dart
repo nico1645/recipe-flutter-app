@@ -182,6 +182,7 @@ class _AddRecipePageState extends State<AddRecipePage> {
                                   top: 10,
                                   child: ElevatedButton(
                                     onPressed: () {
+                                      image.delete();
                                       imagesList.remove(image);
                                       setState(() {
                                         imagesList;
